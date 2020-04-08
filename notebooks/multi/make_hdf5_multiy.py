@@ -14,7 +14,7 @@
 # ---
 
 # +
-dataname="trg-multi-7classes"
+dataname="trg-multi-7classes-10x"
 
 resize_resolutions=[1,.25] #resize input image, base and second
 
@@ -28,7 +28,7 @@ class_names=["Fat", "Muscular", "Vein", "Gland", "Stroma", "Tumor", "Epithelium"
 
 #-- relating to masks
 #max_number_samples={"train":5000,"val":100}
-max_number_samples={"train":500,"val":100}
+max_number_samples={"train":100,"val":20}
 phases=['train','val'] 
 
 
@@ -78,7 +78,8 @@ print(f"random seed (note down for reproducibility): {seed}")
 img_dtype = tables.UInt8Atom()  # dtype in which the images will be saved, this indicates that images will be saved as unsigned int 8 bit, i.e., [0,255]
 filenameAtom = tables.StringAtom(itemsize=255) #create an atom to store the filename of the image, just incase we need it later, 
 
-files=glob.glob('../../data/raw/*mask.png')
+files=glob.glob('../../../data/raw/10x/*mask.png')
+files=[file for file in files if 'Necrosis' not in file]
 #create training and validation stages and split the files appropriately between them
 
 files
@@ -108,7 +109,7 @@ for phase in phases: #now for each of the phases, we'll loop through the files
     print(phase)
     
     
-    hdf5_file = tables.open_file(f"../../data/processed/{dataname}-{phase}.pytable", mode='w') #open the respective pytable
+    hdf5_file = tables.open_file(f"../../../data/processed/{dataname}-{phase}.pytable", mode='w') #open the respective pytable
     storage["filenames"] = hdf5_file.create_earray(hdf5_file.root, 'filenames', filenameAtom, (0,)) #create the array for storage
     
     
